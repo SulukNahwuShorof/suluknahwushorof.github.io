@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Sholat - As-Suluk</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        :root {
+            --hijau-tua: #1a4d2e;
+            --emas: #c6a15b;
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* ===== ANIMASI SMOOTH ===== */
+        .fade-enter {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-scale {
+            opacity: 0;
+            transform: scale(0.95);
+            animation: fadeScale 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeScale {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .slide-right {
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes slideRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        
+        /* ===== LOADING SPINNER ===== */
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(26, 77, 46, 0.1);
+            border-top-color: #1a4d2e;
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+         /* ===== CARD STYLES ===== */
+        .time-card {
+            background: white;
+            border: 1px solid rgba(26, 77, 46, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .time-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(26, 77, 46, 0.2);
+            border-color: rgba(26, 77, 46, 0.2);
+        }
+        
+        .time-card.active {
+            background: linear-gradient(135deg, #1a4d2e, #2d6a4f);
+            color: white;
+        }
+        
+        /* ===== GLASS EFFECT ===== */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(26, 77, 46, 0.1);
+        }
+        
+        /* ===== KOMPAS ELEGAN ===== */
+        .kompas {
+            width: 160px;
+            height: 160px;
+            position: relative;
+        }
+        
+        .kompas-circle {
+            position: absolute;
+            inset: 0;
+            border: 2px solid rgba(26, 77, 46, 0.2);
+            border-radius: 50%;
+        }
+        
+        .kompas-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90%;
+            height: 1px;
+            background: rgba(26, 77, 46, 0.1);
+            transform: translate(-50%, -50%);
+        }
+        
+        .kompas-line.rotate-45 { transform: translate(-50%, -50%) rotate(45deg); }
+        .kompas-line.rotate-90 { transform: translate(-50%, -50%) rotate(90deg); }
+        .kompas-line.rotate-135 { transform: translate(-50%, -50%) rotate(135deg); }
+        
+        .kompas-needle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 70px;
+            background: linear-gradient(to top, #1a4d2e, #2d6a4f);
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .kompas-needle::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: #c6a15b;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .kompas-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: #c6a15b;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .kompas-label {
+            position: absolute;
+            font-size: 12px;
+            font-weight: 500;
+            color: #9ca3af;
+        }
+        
+        .label-u { top: -20px; left: 50%; transform: translateX(-50%); }
+        .label-s { bottom: -20px; left: 50%; transform: translateX(-50%); }
+        .label-b { left: -20px; top: 50%; transform: translateY(-50%); }
+        .label-t { right: -20px; top: 50%; transform: translateY(-50%); }
+    </style>
+</head>
+<body class="bg-gray-50 overflow-x-hidden">
+
+<!-- ===== NAVBAR MINIMAL ===== -->
+<nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-[#1a4d2e]/10">
+    <div class="max-w-6xl mx-auto px-5 flex items-center justify-center h-20">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-3 group">
+            <div class="w-16 h-16 bg-[#1a4d2e] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-md group-hover:scale-110 transition-transform duration-500">
+                
+            </div>
+            <span class="font-display font-bold text-2xl text-[#1a4d2e] group-hover:text-[#2d6a4f] transition-colors duration-300">
+                As-Suluk
+            </span>
+        </a>
+    </div>
+</nav>
+
+<!-- ===== SPACER ===== -->
+<div class="h-20"></div>
+
+<!-- ===== HEADER ===== -->
+<section class="py-12 bg-gradient-to-br from-[#1a4d2e] to-[#2d6a4f] text-white relative overflow-hidden">
+    <!-- Decorative -->
+    <div class="absolute inset-0 opacity-10">
+        <i class="fa-regular fa-moon absolute text-8xl -top-10 -right-10 rotate-12"></i>
+        <i class="fa-regular fa-sun absolute text-8xl -bottom-10 -left-10"></i>
+    </div>
+    
+    <div class="max-w-4xl mx-auto px-5 text-center relative z-10">
+        <h1 class="font-display text-4xl md:text-5xl font-bold mb-4 fade-enter">Jadwal Sholat</h1>
+        <p class="text-xl text-white/90 max-w-2xl mx-auto fade-enter delay-1">
+            Otomatis sesuai lokasi Anda saat ini
+        </p>
+    </div>
+</section>
+
+<!-- ===== MAIN CONTENT ===== -->
+<section class="py-12">
+    <div class="max-w-4xl mx-auto px-5">
+        
+        <!-- LOADING -->
+        <div id="loadingContainer" class="text-center py-20 fade-enter">
+            <div class="spinner mx-auto mb-6"></div>
+            <p class="text-gray-600 pulse">Mendeteksi lokasi Anda...</p>
+            <p class="text-sm text-gray-400 mt-2">Mohon izinkan akses lokasi</p>
+        </div>
+        
+           <!-- DATA JADWAL -->
+        <div id="dataContainer" class="hidden">
+            <!-- Info Lokasi -->
+            <div class="glass-card rounded-2xl p-6 mb-6 slide-right">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-[#1a4d2e]/10 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-location-dot text-[#1a4d2e]"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Lokasi Anda</p>
+                            <h2 class="font-bold text-xl text-gray-800" id="lokasiText">Cirebon, Jawa Barat</h2>
+                        </div>
+                    </div>
+                    <div class="text-right border-l-2 border-[#1a4d2e]/20 pl-4">
+                        <p class="text-sm text-gray-500" id="tanggalMasehi">15 Februari 2026</p>
+                        <p class="font-display text-[#1a4d2e]" id="tanggalHijriah">27 Rajab 1447 H</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grid Waktu -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <!-- Imsak -->
+                <div class="time-card rounded-xl p-4 fade-scale delay-1">
+                    <div class="text-[#c6a15b] text-sm font-medium mb-1">Imsak</div>
+                    <div class="text-2xl font-bold text-gray-800" id="imsak">04:18</div>
+                </div>
+                
+                <!-- Subuh -->
+                <div class="time-card active rounded-xl p-4 fade-scale delay-1">
+                    <div class="text-white/80 text-sm font-medium mb-1">Subuh</div>
+                    <div class="text-2xl font-bold text-white" id="subuh">04:28</div>
+                </div>
+                
+                <!-- Terbit -->
+                <div class="time-card rounded-xl p-4 fade-scale delay-2">
+                    <div class="text-gray-500 text-sm font-medium mb-1">Terbit</div>
+                    <div class="text-2xl font-bold text-gray-800" id="terbit">05:42</div>
+                </div>
+                
+                <!-- Dhuha -->
+                <div class="time-card rounded-xl p-4 fade-scale delay-2">
+                    <div class="text-gray-500 text-sm font-medium mb-1">Dhuha</div>
+                    <div class="text-2xl font-bold text-gray-800" id="dhuha">06:12</div>
+                </div>
+                
+                <!-- Dzuhur -->
+                <div class="time-card rounded-xl p-4 fade-scale delay-3">
+                    <div class="text-gray-500 text-sm font-medium mb-1">Dzuhur</div>
+                    <div class="text-2xl font-bold text-gray-800" id="dzuhur">12:02</div>
+                </div>
+                
+                <!-- Ashar -->
+                <div class="time-card rounded-xl p-4 fade-scale delay-3">
+                    <div class="text-gray-500 text-sm font-medium mb-1">Ashar</div>
+                    <div class="text-2xl font-bold text-gray-800" id="ashar">15:16</div>
+                </div>
+                
+                <!-- Maghrib -->
+                <div class="time-card rounded-xl p-4 fade-scale delay-4">
+                    <div class="text-gray-500 text-sm font-medium mb-1">Maghrib</div>
+                    <div class="text-2xl font-bold text-gray-800" id="maghrib">18:19</div>
+                </div>
+                
+                <!-- Isya -->
+                <div class="time-card rounded-xl p-4 fade-scale delay-4">
+                    <div class="text-gray-500 text-sm font-medium mb-1">Isya</div>
+                    <div class="text-2xl font-bold text-gray-800" id="isya">19:29</div>
+                </div>
+            </div>
+            
+            <!-- Arah Kiblat -->
+            <div class="glass-card rounded-2xl p-8 slide-right delay-2">
+                <h3 class="font-display text-2xl text-[#1a4d2e] mb-8 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-[#1a4d2e]/10 rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-kaaba text-[#c6a15b]"></i>
+                    </div>
+                    <span>Arah Kiblat</span>
+                </h3>
+                
+                <div class="flex flex-col md:flex-row items-center gap-10">
+                    <!-- Kompas -->
+                    <div class="kompas">
+                        <div class="kompas-circle"></div>
+                        <div class="kompas-line"></div>
+                        <div class="kompas-line rotate-45"></div>
+                        <div class="kompas-line rotate-90"></div>
+                        <div class="kompas-line rotate-135"></div>
+                        
+                        <div class="kompas-needle" id="jarumKiblat"></div>
+                        <div class="kompas-center"></div>
+                        
+                        <span class="kompas-label label-u">U</span>
+                        <span class="kompas-label label-s">S</span>
+                        <span class="kompas-label label-b">B</span>
+                        <span class="kompas-label label-t">T</span>
+                    </div>
+                    
+                    <!-- Info -->
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="bg-[#1a4d2e]/5 rounded-xl p-5">
+                            <div class="text-sm text-gray-500 mb-2">Arah Kiblat</div>
+                            <div class="flex items-center justify-center md:justify-start gap-2">
+                                <span class="font-display text-5xl font-bold text-[#1a4d2e]" id="arahKiblat">294.5</span>
+                                <span class="text-gray-400 text-xl">°</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2" id="arahKiblatText">Barat Laut</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 mt-4">
+                            <div class="bg-gray-50 p-3 rounded-xl">
+                                <div class="text-xs text-gray-400">Jarak</div>
+                                <div class="font-medium text-[#1a4d2e]" id="jarakKiblat">7.854 km</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-xl">
+                                <div class="text-xs text-gray-400">Akurasi</div>
+                                <div class="font-medium text-[#1a4d2e]">± 0.1°</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+              <!-- Sumber -->
+            <div class="mt-4 text-center text-xs text-gray-400 slide-right delay-3">
+                <i class="fa-regular fa-circle-check text-[#1a4d2e] mr-1"></i>
+                Data berdasarkan Kementerian Agama RI
+            </div>
+        </div>
+        
+        <!-- ERROR -->
+        <div id="errorContainer" class="hidden text-center py-20 fade-enter">
+            <div class="w-20 h-20 bg-red-100 rounded-2xl flex items-center justify-center text-red-400 text-4xl mx-auto mb-4">
+                <i class="fa-regular fa-circle-xmark"></i>
+            </div>
+            <p class="text-gray-700 font-medium text-lg">Tidak dapat mengakses lokasi</p>
+            <p class="text-sm text-gray-500 mt-2 mb-6 max-w-md mx-auto" id="errorMessage">
+                Mohon izinkan akses lokasi di browser Anda
+            </p>
+            <button onclick="location.reload()" class="bg-[#1a4d2e] text-white px-8 py-3 rounded-xl text-sm font-medium hover:bg-[#2d6a4f] transition-all duration-300 hover:scale-105 shadow-md">
+                <i class="fa-regular fa-rotate-right mr-2"></i> Coba Lagi
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SCRIPT ===== -->
+<script>
+    // API
+    const API_URL = 'https://api.aladhan.com/v1/timings';
+    const KABAH_LAT = 21.4225;
+    const KABAH_LNG = 39.8262;
+    
+    // Fungsi hitung arah kiblat
+    function hitungArahKiblat(lat, lng) {
+        const toRad = (v) => v * Math.PI / 180;
+        const toDeg = (v) => v * 180 / Math.PI;
+        
+        const y = Math.sin(toRad(KABAH_LNG - lng)) * Math.cos(toRad(KABAH_LAT));
+        const x = Math.cos(toRad(lat)) * Math.sin(toRad(KABAH_LAT)) - 
+                  Math.sin(toRad(lat)) * Math.cos(toRad(KABAH_LAT)) * Math.cos(toRad(KABAH_LNG - lng));
+        
+        let qibla = toDeg(Math.atan2(y, x));
+        qibla = (qibla + 360) % 360;
+        return qibla;
+    }
+    
+    // Fungsi hitung jarak
+    function hitungJarak(lat, lng) {
+        const R = 6371;
+        const toRad = (v) => v * Math.PI / 180;
+        
+        const dLat = toRad(KABAH_LAT - lat);
+        const dLng = toRad(KABAH_LNG - lng);
+        
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                 Math.cos(toRad(lat)) * Math.cos(toRad(KABAH_LAT)) *
+                 Math.sin(dLng/2) * Math.sin(dLng/2);
+        
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return (R * c).toFixed(0);
+    }
+    
+    // Fungsi dapat nama kota
+    async function getNamaKota(lat, lng) {
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`);
+            const data = await res.json();
+            if (data.address) {
+                const kota = data.address.city || data.address.town || data.address.village || data.address.county;
+                const prov = data.address.state || '';
+                return `${kota}, ${prov}`.replace(', ,', ',').replace(/, $/, '');
+            }
+            return 'Lokasi Anda';
+        } catch {
+            return 'Lokasi Anda';
+        }
+    }
+    
+    // Format Hijriah
+    function formatHijriah(tanggal) {
+        const bulan = [
+            'Muharram', 'Safar', 'Rabi\'ul Awwal', 'Rabi\'ul Akhir',
+            'Jumadal Ula', 'Jumadal Akhirah', 'Rajab', 'Sya\'ban',
+            'Ramadhan', 'Syawwal', 'Dzulqa\'dah', 'Dzulhijjah'
+        ];
+        return `${tanggal.hijri.day} ${bulan[tanggal.hijri.month - 1]} ${tanggal.hijri.year} H`;
+    }
+    
+    // Dapatkan nama arah
+    function getNamaArah(derajat) {
+        if (derajat >= 337.5 || derajat < 22.5) return 'Utara';
+        if (derajat >= 22.5 && derajat < 67.5) return 'Timur Laut';
+        if (derajat >= 67.5 && derajat < 112.5) return 'Timur';
+        if (derajat >= 112.5 && derajat < 157.5) return 'Tenggara';
+        if (derajat >= 157.5 && derajat < 202.5) return 'Selatan';
+        if (derajat >= 202.5 && derajat < 247.5) return 'Barat Daya';
+        if (derajat >= 247.5 && derajat < 292.5) return 'Barat';
+        if (derajat >= 292.5 && derajat < 337.5) return 'Barat Laut';
+        return 'Barat Laut';
+    }
+    
+    // Main
+    document.addEventListener('DOMContentLoaded', function() {
+        const loading = document.getElementById('loadingContainer');
+        const dataContainer = document.getElementById('dataContainer');
+        const error = document.getElementById('errorContainer');
+        const errorMsg = document.getElementById('errorMessage');
+        
+        if (!navigator.geolocation) {
+            loading.classList.add('hidden');
+            error.classList.remove('hidden');
+            errorMsg.textContent = 'Browser tidak mendukung geolocation';
+            return;
+        }
+        
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const { latitude: lat, longitude: lng } = pos.coords;
+                
+                try {
+                    const kota = await getNamaKota(lat, lng);
+                    const today = new Date();
+                    const dateStr = `${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}`;
+                    
+                    const res = await fetch(`${API_URL}/${dateStr}?latitude=${lat}&longitude=${lng}&method=11`);
+                    const data = await res.json();
+                    
+                    if (data.code === 200) {
+                        const timings = data.data.timings;
+                        const tgl = data.data.date;
+                        
+                        // Update teks
+                        document.getElementById('lokasiText').textContent = kota;
+                        document.getElementById('tanggalMasehi').textContent = 
+                            `${tgl.gregorian.day} ${tgl.gregorian.month.en} ${tgl.gregorian.year}`;
+                        document.getElementById('tanggalHijriah').textContent = formatHijriah(tgl);
+                        
+                        document.getElementById('imsak').textContent = timings.Imsak;
+                        document.getElementById('subuh').textContent = timings.Fajr;
+                        document.getElementById('terbit').textContent = timings.Sunrise;
+                        document.getElementById('dhuha').textContent = timings.Sunrise ? 
+                            timings.Sunrise.replace(/:\d+/, '') + ':' + 
+                            (parseInt(timings.Sunrise.split(':')[1]) + 20).toString().padStart(2, '0') : '06:12';
+                        document.getElementById('dzuhur').textContent = timings.Dhuhr;
+                        document.getElementById('ashar').textContent = timings.Asr;
+                        document.getElementById('maghrib').textContent = timings.Maghrib;
+                        document.getElementById('isya').textContent = timings.Isha;
+                        
+                        const qibla = hitungArahKiblat(lat, lng);
+                        const jarak = hitungJarak(lat, lng);
+                        
+                        document.getElementById('arahKiblat').textContent = qibla.toFixed(1);
+                        document.getElementById('jarakKiblat').textContent = `${jarak} km`;
+                        document.getElementById('arahKiblatText').textContent = getNamaArah(qibla);
+                        
+                        // Animasi jarum
+                        setTimeout(() => {
+                            document.getElementById('jarumKiblat').style.transform = 
+                                `translate(-50%, -100%) rotate(${qibla}deg)`;
+                        }, 100);
+                        
+                        // Sembunyikan loading
+                        loading.style.opacity = '0';
+                        setTimeout(() => {
+                            loading.classList.add('hidden');
+                            dataContainer.classList.remove('hidden');
+                        }, 500);
+                    }
+                } catch (err) {
+                    loading.classList.add('hidden');
+                    error.classList.remove('hidden');
+                    errorMsg.textContent = 'Gagal mengambil data. Periksa koneksi.';
+                }
+            },
+            (err) => {
+                loading.classList.add('hidden');
+                error.classList.remove('hidden');
+                
+                switch(err.code) {
+                    case err.PERMISSION_DENIED:
+                        errorMsg.textContent = 'Akses lokasi ditolak. Izinkan akses lokasi.';
+                        break;
+                    case err.POSITION_UNAVAILABLE:
+                        errorMsg.textContent = 'Informasi lokasi tidak tersedia.';
+                        break;
+                    case err.TIMEOUT:
+                        errorMsg.textContent = 'Waktu permintaan lokasi habis.';
+                        break;
+                    default:
+                        errorMsg.textContent = 'Terjadi kesalahan.';
+                }
+            }
+        );
+    });
+</script>
+
+<!-- ===== FOOTER MINIMAL ===== -->
+<footer class="bg-gray-900 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-5 text-center text-sm text-gray-400">
+        <p>© 2026 Metode As-Suluk - Pondok Pesantren Matholib As-Suluk</p>
+    </div>
+</footer>
+
+</body>
+</html>
