@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }} | Metode As-Suluk</title>
+    <meta name="description" content="{{ page.description }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Playfair Display', serif; }
+        .arabic { font-family: 'Amiri', serif; direction: rtl; }
+        .navbar-glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); }
+        .container-mewah { max-width: 1280px; margin: auto; padding: 0 1.5rem; }
+        .prose p { margin-bottom: 1.5rem; line-height: 1.8; }
+    </style>
+</head>
+<body class="bg-[#faf9f6]">
+
+<!-- NAVBAR -->
+<nav class="navbar-glass fixed top-0 w-full z-50">
+    <div class="container-mewah flex items-center justify-between h-20">
+        <div class="flex items-center gap-1">
+            <img src="https://raw.githubusercontent.com/SulukNahwuShorof/metodeassuluk.github.io/main/LOGO%20(1).png" 
+                 alt="Logo" 
+                 class="w-14 h-14 object-contain">
+            <span class="font-display font-bold text-3xl text-[#1a4d2e]">As-Suluk</span>
+        </div>
+        <a href="/metodeassuluk.github.io/" class="text-[#1a4d2e] hover:text-[#c6a15b] transition flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
+            <i class="fa-regular fa-arrow-left"></i> Kembali
+        </a>
+    </div>
+</nav>
+
+<!-- HEADER ARTIKEL -->
+<header class="pt-32 pb-8 container-mewah">
+    <h1 class="font-display text-4xl text-[#1a4d2e] mb-4">{{ page.title }}</h1>
+    <div class="flex gap-4 text-sm text-gray-500">
+        <span><i class="fa-regular fa-calendar mr-1"></i> {{ page.date | date: "%d %B %Y" }}</span>
+        <span><i class="fa-regular fa-clock mr-1"></i> {{ page.read_time | default: "5" }} menit</span>
+    </div>
+</header>
+
+<!-- KONTEN ARTIKEL -->
+<main class="pb-16 container-mewah">
+    <div class="prose max-w-3xl mx-auto prose-lg">
+        {{ content }}
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-[#0f2b1a] text-white pt-8 pb-4">
+    <div class="container-mewah text-center text-sm text-gray-400">
+        <p>© 2026 Metode As-Suluk - Pondok Pesantren Matholib As-Suluk, Cirebon</p>
+    </div>
+</footer>
+
+</body>
+</html>
