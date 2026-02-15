@@ -1,0 +1,16 @@
+title: Metode As-Suluk
+email: ppmatholibasuluk02@gmail.com
+description: Metode cepat memahami Ilmu Nahwu dan Shorof
+baseurl: "/metodeassuluk.github.io"
+url: "https://suluknahwushorof.github.io"
+
+markdown: kramdown
+permalink: /:title/
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      author: "Tim Methode As-Suluk"
