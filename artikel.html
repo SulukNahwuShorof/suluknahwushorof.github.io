@@ -1,0 +1,52 @@
+---
+layout: default
+title: Artikel
+---
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artikel | Metode As-Suluk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Playfair Display', serif; }
+        .navbar-glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); }
+        .container-mewah { max-width: 1280px; margin: auto; padding: 0 1.5rem; }
+    </style>
+</head>
+<body class="bg-[#faf9f6]">
+
+<nav class="navbar-glass fixed top-0 w-full z-50">
+    <div class="container-mewah flex items-center justify-between h-20">
+        <div class="flex items-center gap-1">
+            <img src="https://raw.githubusercontent.com/SulukNahwuShorof/metodeassuluk.github.io/main/LOGO%20(1).png" class="w-14 h-14 object-contain">
+            <span class="font-display font-bold text-3xl text-[#1a4d2e]">As-Suluk</span>
+        </div>
+        <a href="index.html" class="text-[#1a4d2e] hover:text-[#c6a15b] transition">Kembali</a>
+    </div>
+</nav>
+
+<main class="pt-32 pb-20 container-mewah">
+    <h1 class="font-display text-4xl text-[#1a4d2e] mb-8">Semua Artikel</h1>
+    
+    <div class="grid gap-6">
+        {% for post in site.posts %}
+        <a href="{{ site.baseurl }}{{ post.url }}" class="block bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
+            <h2 class="font-display text-2xl text-[#1a4d2e] mb-2">{{ post.title }}</h2>
+            <p class="text-gray-600 mb-3">{{ post.description | truncate: 150 }}</p>
+            <div class="flex gap-4 text-sm text-gray-500">
+                <span><i class="fa-regular fa-calendar mr-1"></i> {{ post.date | date: "%d %B %Y" }}</span>
+                <span><i class="fa-regular fa-clock mr-1"></i> {{ post.read_time }} menit</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</main>
+
+</body>
+</html>
